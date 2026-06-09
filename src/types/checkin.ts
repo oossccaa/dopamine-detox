@@ -1,3 +1,4 @@
+// 保留供既有 IndexedDB v1 表格與資料匯出/匯入相容；不再於任何畫面讀寫。
 export interface CheckinRecord {
   id?: number
   trackingItemId: number
@@ -5,11 +6,4 @@ export interface CheckinRecord {
   checkedIn: boolean
   note?: string
   createdAt: Date
-}
-
-export interface StreakInfo {
-  currentStreak: number
-  longestStreak: number
-  totalDays: number
-  successDays: number
 }

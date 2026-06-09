@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useUrgeLog } from "@/hooks/use-urge-log"
-import { useTrackingItems } from "@/hooks/use-tracking-items"
 import { cn } from "@/lib/utils"
 import { Check, ThumbsUp, ThumbsDown } from "lucide-react"
 
@@ -17,19 +16,16 @@ interface UrgeLogFormProps {
 
 export function UrgeLogForm({ strategyUsed, onSaved }: UrgeLogFormProps) {
   const { logUrge } = useUrgeLog()
-  const { items } = useTrackingItems()
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null)
   const [intensity, setIntensity] = useState<1 | 2 | 3 | 4 | 5>(3)
   const [helped, setHelped] = useState<boolean | null>(null)
   const [note, setNote] = useState("")
   const [saving, setSaving] = useState(false)
 
   const handleSave = async () => {
-    if (!selectedItemId) return
     setSaving(true)
     await logUrge({
       date: dayjs().format("YYYY-MM-DD"),
-      trackingItemId: selectedItemId,
+      trackingItemId: 0, // 單一整體挑戰：不再綁定個別項目
       intensity,
       strategyUsed,
       helped,
@@ -45,26 +41,6 @@ export function UrgeLogForm({ strategyUsed, onSaved }: UrgeLogFormProps) {
         <CardTitle className="text-base">記錄這次衝動</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div>
-          <p className="mb-2 text-sm font-medium">相關項目</p>
-          <div className="flex flex-wrap gap-2">
-            {items.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setSelectedItemId(item.id!)}
-                className={cn(
-                  "rounded-full px-3 py-1 text-sm transition-all",
-                  selectedItemId === item.id
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div>
           <p className="mb-2 text-sm font-medium">衝動強度</p>
           <div className="flex gap-2">
@@ -120,11 +96,7 @@ export function UrgeLogForm({ strategyUsed, onSaved }: UrgeLogFormProps) {
           rows={2}
         />
 
-        <Button
-          onClick={handleSave}
-          disabled={!selectedItemId || saving}
-          className="w-full"
-        >
+        <Button onClick={handleSave} disabled={saving} className="w-full">
           <Check className="mr-1 h-4 w-4" />
           儲存紀錄
         </Button>

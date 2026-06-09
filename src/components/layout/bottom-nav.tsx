@@ -2,20 +2,13 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import {
-  Home,
-  Calendar,
-  SmilePlus,
-  BarChart3,
-  Settings,
-} from "lucide-react"
+import { Target, SmilePlus, BookOpen, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { href: "/", label: "首頁", icon: Home },
-  { href: "/calendar", label: "日曆", icon: Calendar },
+  { href: "/", label: "挑戰", icon: Target },
   { href: "/mood", label: "心情", icon: SmilePlus },
-  { href: "/stats", label: "統計", icon: BarChart3 },
+  { href: "/guide", label: "指南", icon: BookOpen },
   { href: "/settings", label: "設定", icon: Settings },
 ]
 

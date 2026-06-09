@@ -13,13 +13,16 @@ export function DataExportImport() {
 
   const handleExport = async () => {
     const data = {
-      version: 1,
+      version: 3,
       exportedAt: new Date().toISOString(),
       trackingItems: await db.trackingItems.toArray(),
       checkins: await db.checkins.toArray(),
       moods: await db.moods.toArray(),
       urgeLogs: await db.urgeLogs.toArray(),
       copingStrategies: await db.copingStrategies.toArray(),
+      challenge: await db.challenge.toArray(),
+      dailyLogs: await db.dailyLogs.toArray(),
+      relapseEvents: await db.relapseEvents.toArray(),
     }
 
     const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -53,14 +56,22 @@ export function DataExportImport() {
       await db.moods.clear()
       await db.urgeLogs.clear()
       await db.copingStrategies.clear()
+      await db.challenge.clear()
+      await db.dailyLogs.clear()
+      await db.relapseEvents.clear()
 
       if (data.trackingItems.length > 0)
         await db.trackingItems.bulkAdd(data.trackingItems)
-      if (data.checkins.length > 0) await db.checkins.bulkAdd(data.checkins)
-      if (data.moods.length > 0) await db.moods.bulkAdd(data.moods)
-      if (data.urgeLogs.length > 0) await db.urgeLogs.bulkAdd(data.urgeLogs)
-      if (data.copingStrategies.length > 0)
+      if (data.checkins?.length > 0) await db.checkins.bulkAdd(data.checkins)
+      if (data.moods?.length > 0) await db.moods.bulkAdd(data.moods)
+      if (data.urgeLogs?.length > 0) await db.urgeLogs.bulkAdd(data.urgeLogs)
+      if (data.copingStrategies?.length > 0)
         await db.copingStrategies.bulkAdd(data.copingStrategies)
+      // 新表格：v1 舊備份不會有，逐一判斷存在性
+      if (data.challenge?.length > 0) await db.challenge.bulkAdd(data.challenge)
+      if (data.dailyLogs?.length > 0) await db.dailyLogs.bulkAdd(data.dailyLogs)
+      if (data.relapseEvents?.length > 0)
+        await db.relapseEvents.bulkAdd(data.relapseEvents)
 
       setMessage("匯入成功！重新整理頁面以查看更新。")
     } catch {
@@ -72,10 +83,13 @@ export function DataExportImport() {
   }
 
   const handleReset = async () => {
-    if (!confirm("確定要清除所有打卡、心情、衝動紀錄嗎？追蹤項目和策略會保留。")) return
+    if (!confirm("確定要清除所有紀錄嗎？包含 30 天挑戰、每日覺察、心情與衝動紀錄。")) return
     await db.checkins.clear()
     await db.moods.clear()
     await db.urgeLogs.clear()
+    await db.challenge.clear()
+    await db.dailyLogs.clear()
+    await db.relapseEvents.clear()
     // 重新種回預設項目和策略
     await db.trackingItems.clear()
     await db.copingStrategies.clear()
